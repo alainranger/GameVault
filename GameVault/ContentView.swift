@@ -60,7 +60,17 @@ struct ContentView: View {
     }
 }
 
-#Preview {
+#Preview("Standard Preview") {
+    ContentView()
+        .modelContainer(for: Item.self, inMemory: true)
+}
+
+#Preview("Landscape left Preview", traits: .landscapeLeft) {
+    ContentView()
+        .modelContainer(for: Item.self, inMemory: true)
+}
+
+#Preview("Portrait Preview", traits: .portrait) {
     ContentView()
         .modelContainer(for: Item.self, inMemory: true)
 }
