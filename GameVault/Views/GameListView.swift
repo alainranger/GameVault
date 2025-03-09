@@ -18,33 +18,33 @@ struct GameListView: View {
     
     var body: some View {
         @Bindable var navigationContext = navigationContext
-        
-        List(selection: $navigationContext.selectedGame) {
-            ForEach(games) { game in
-                NavigationLink {
-                    GameDetailView(game: game)
-                } label: {
-                    GameRow(game: game)
+        NavigationStack {
+            List(selection: $navigationContext.selectedGame) {
+                ForEach(games) { game in
+                    NavigationLink {
+                        GameDetailView(game: game)
+                    } label: {
+                        GameRow(game: game)
+                    }
+                }
+                .onDelete(perform: removeGames)
+            }
+            .sheet(isPresented: $isEditorPresented) {
+                GameEditorView(game: nil)
+            }
+            .overlay {
+                if games.isEmpty {
+                    ContentUnavailableView {
+                        Text("No games")
+                    } description: {
+                        AddGameButton(isActive: $isEditorPresented)
+                    }
                 }
             }
-            .onDelete(perform: removeGames)
-        }
-        .sheet(isPresented: $isEditorPresented) {
-            GameEditorView(game: nil)
-        }
-        .overlay {
-            if games.isEmpty {
-                ContentUnavailableView {
-                    Text("No games")
-                } description: {
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
                     AddGameButton(isActive: $isEditorPresented)
                 }
-                
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                AddGameButton(isActive: $isEditorPresented)
             }
         }
     }

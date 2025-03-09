@@ -17,9 +17,59 @@ struct GameDetailView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationContext.self) private var navigationContext
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         if let game {
+            GameDetailContenView(game: game)
+                .navigationTitle("Detail")
+                .toolbar {
+                    Button { isEditing = true } label: {
+                        Label("Edit \(game.title)", systemImage: "pencil")
+                            .help("Edit the game")
+                    }
+                    
+                    Button { isDeleting = true } label: {
+                        Label("Delete \(game.title)", systemImage: "trash")
+                            .help("Delete the game")
+                    }
+                }
+                .sheet(isPresented: $isEditing) {
+                    GameEditorView(game: game)
+                }
+                .alert("Delete \(game.title)?", isPresented: $isDeleting) {
+                    Button("Yes, delete \(game.title)", role: .destructive) {
+                        delete(game)
+                    }
+                }
+            
+        } else {
+            ContentUnavailableView {
+                Text("No game")
+            }
+        }
+    }
+    
+    private func delete(_ game: Game) {
+        navigationContext.selectedGame = nil
+        modelContext.delete(game)
+        dismiss()
+    }
+}
+
+private struct GameDetailContenView: View {
+    let game: Game
+    
+    var body: some View {
+        VStack {
+            #if os(macOS)
+            Text(animal.name)
+                .font(.title)
+                .padding()
+            #else
+            EmptyView()
+            #endif
+            
             List {
                 HStack {
                     Text("Title")
@@ -43,7 +93,7 @@ struct GameDetailView: View {
                 }
                 HStack {
                     Text("Rating")
-                    Spacer()                    
+                    Spacer()
                     Text(game.rating.map { "\($0)" } ?? "")
                 }
                 HStack {
@@ -67,16 +117,7 @@ struct GameDetailView: View {
                     Text("\(game.notes)")
                 }
             }
-            
-        } else {
-            ContentUnavailableView("No game", systemImage: "")
         }
-        
-    }
-    
-    private func delete(_ game: Game) {
-        navigationContext.selectedGame = nil
-        modelContext.delete(game)
     }
 }
 

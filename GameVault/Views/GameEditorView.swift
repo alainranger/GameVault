@@ -22,7 +22,7 @@ struct GameEditorView: View {
     @State private var status = ""
     @State private var notes = ""
     
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
     private var editorTitle: String {
@@ -88,7 +88,31 @@ struct GameEditorView: View {
     }
     
     private func save() {
-        
+        if let game {
+            // Edit the game
+            game.title = title
+            game.platform = platform
+            game.releaseDate = releaseDate
+            game.genre = genre
+            game.rating = rating
+            game.completionDate = completionDate
+            game.playTime = playTime
+            game.status = status
+            game.notes = notes
+        } else {
+            // Add a game
+            let newGame = Game(title: title)
+            newGame.platform = platform
+            newGame.releaseDate = releaseDate
+            newGame.genre = genre
+            newGame.rating = rating
+            newGame.completionDate = completionDate
+            newGame.playTime = playTime
+            newGame.status = status
+            newGame.notes = notes
+            
+            modelContext.insert(newGame)
+        }
     }
 }
 
