@@ -11,8 +11,8 @@ import SwiftData
 @main
 struct GameVaultApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
+        let schema = Schema([            
+            Game.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
