@@ -8,19 +8,23 @@
 import SwiftUI
 import SwiftData
 
+private struct GameEditorViewModel {
+    var title = ""
+    var platform = ""
+    var releaseDate = Date()
+    var genre = ""
+    var rating = 0
+    var completionDate = Date()
+    var playTime = 0
+    var status = ""
+    var notes = ""
+}
+
 struct GameEditorView: View {
     
     let game: Game?
     
-    @State private var title = ""
-    @State private var platform = ""
-    @State private var releaseDate = Date()
-    @State private var genre = ""
-    @State private var rating = 0
-    @State private var completionDate = Date()
-    @State private var playTime = 0
-    @State private var status = ""
-    @State private var notes = ""
+    @State private var viewModel = GameEditorViewModel(title: "", platform: "", releaseDate: Date(), genre: "", rating: 0, completionDate: Date(), playTime: 0, status: "", notes: "")
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -32,16 +36,16 @@ struct GameEditorView: View {
     var body: some View {
         NavigationStack {
             Form {
-                TextField("Title", text: $title)
-                TextField("Platform", text: $platform)
-                DatePicker("Release Date", selection: $releaseDate, displayedComponents: .date)
-                TextField("Genre", text: $genre)
-                Stepper("Rating: \(rating)", value: $rating, in: 0...5)
-                DatePicker("Completion Date", selection: $completionDate, displayedComponents: .date)
-                Stepper("Play Time: \(playTime)", value: $playTime, in: 0...100)
-                TextField("Status", text: $status)
+                TextField("Title", text: $viewModel.title)
+                TextField("Platform", text: $viewModel.platform)
+                DatePicker("Release Date", selection: $viewModel.releaseDate, displayedComponents: .date)
+                TextField("Genre", text: $viewModel.genre)
+                Stepper("Rating: \(viewModel.rating)", value: $viewModel.rating, in: 0...5)
+                DatePicker("Completion Date", selection: $viewModel.completionDate, displayedComponents: .date)
+                Stepper("Play Time: \(viewModel.playTime)", value: $viewModel.playTime, in: 0...100)
+                TextField("Status", text: $viewModel.status)
                 Label("Notes", systemImage: "pencil")   // TextEditor not available in preview
-                TextEditor(text: $notes)
+                TextEditor(text: $viewModel.notes)
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
@@ -56,7 +60,7 @@ struct GameEditorView: View {
                         }
                     }
                     // Require a title to save changes.
-                    .disabled(title.isEmpty)
+                    .disabled(viewModel.title.isEmpty)
                 }
                 
                 ToolbarItem(placement: .cancellationAction) {
@@ -68,17 +72,17 @@ struct GameEditorView: View {
             .onAppear {
                 if let game {
                     // Edit the incoming animal.
-                    title = game.title
-                    platform = game.platform
+                    viewModel.title = game.title
+                    viewModel.platform = game.platform
                     // TODO if date is nil, set no date
-                    releaseDate = game.releaseDate ?? Date()
-                    genre = game.genre
-                    rating = game.rating ?? 0
+                    viewModel.releaseDate = game.releaseDate ?? Date()
+                    viewModel.genre = game.genre
+                    viewModel.rating = game.rating ?? 0
                     // TODO if date is nil, set no date
-                    completionDate = game.completionDate ?? Date()
-                    playTime = game.playTime
-                    status = game.status
-                    notes = game.notes
+                    viewModel.completionDate = game.completionDate ?? Date()
+                    viewModel.playTime = game.playTime
+                    viewModel.status = game.status
+                    viewModel.notes = game.notes
                 }
             }
             #if os(macOS)
@@ -90,26 +94,26 @@ struct GameEditorView: View {
     private func save() {
         if let game {
             // Edit the game
-            game.title = title
-            game.platform = platform
-            game.releaseDate = releaseDate
-            game.genre = genre
-            game.rating = rating
-            game.completionDate = completionDate
-            game.playTime = playTime
-            game.status = status
-            game.notes = notes
+            game.title = viewModel.title
+            game.platform = viewModel.platform
+            game.releaseDate = viewModel.releaseDate
+            game.genre = viewModel.genre
+            game.rating = viewModel.rating
+            game.completionDate = viewModel.completionDate
+            game.playTime = viewModel.playTime
+            game.status = viewModel.status
+            game.notes = viewModel.notes
         } else {
             // Add a game
-            let newGame = Game(title: title)
-            newGame.platform = platform
-            newGame.releaseDate = releaseDate
-            newGame.genre = genre
-            newGame.rating = rating
-            newGame.completionDate = completionDate
-            newGame.playTime = playTime
-            newGame.status = status
-            newGame.notes = notes
+            let newGame = Game(title: viewModel.title)
+            newGame.platform = viewModel.platform
+            newGame.releaseDate = viewModel.releaseDate
+            newGame.genre = viewModel.genre
+            newGame.rating = viewModel.rating
+            newGame.completionDate = viewModel.completionDate
+            newGame.playTime = viewModel.playTime
+            newGame.status = viewModel.status
+            newGame.notes = viewModel.notes
             
             modelContext.insert(newGame)
         }
