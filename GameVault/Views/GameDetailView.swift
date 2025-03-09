@@ -8,12 +8,16 @@
 import SwiftUI
 import SwiftData
 
+struct GameDetailViewModel {
+    var isEditing = false
+    var isDeleting = false
+}
+
 struct GameDetailView: View {
     
     var game: Game?
     
-    @State private var isEditing = false
-    @State private var isDeleting = false
+    @State private var viewModel = GameDetailViewModel(isEditing: false, isDeleting: false)
     
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationContext.self) private var navigationContext
@@ -24,20 +28,20 @@ struct GameDetailView: View {
             GameDetailContenView(game: game)
                 .navigationTitle("Detail")
                 .toolbar {
-                    Button { isEditing = true } label: {
+                    Button { viewModel.isEditing = true } label: {
                         Label("Edit \(game.title)", systemImage: "pencil")
                             .help("Edit the game")
                     }
                     
-                    Button { isDeleting = true } label: {
+                    Button { viewModel.isDeleting = true } label: {
                         Label("Delete \(game.title)", systemImage: "trash")
                             .help("Delete the game")
                     }
                 }
-                .sheet(isPresented: $isEditing) {
+                .sheet(isPresented: $viewModel.isEditing) {
                     GameEditorView(game: game)
                 }
-                .alert("Delete \(game.title)?", isPresented: $isDeleting) {
+                .alert("Delete \(game.title)?", isPresented: $viewModel.isDeleting) {
                     Button("Yes, delete \(game.title)", role: .destructive) {
                         delete(game)
                     }
