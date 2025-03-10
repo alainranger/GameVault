@@ -11,17 +11,18 @@ import SwiftData
 @Model
 final class Game: Identifiable {
     @Attribute(.unique) var id: String = UUID().uuidString
-    var title: String = ""
-    var platform: String = ""
-    var genre: String = ""
+    var title: String
+    var platform: String?
+    var genre: String?
     var rating: Int? = nil
     var releaseDate: Date? = nil
     var completionDate: Date? = nil
-    var playTime: Int
-    var status: String = ""
-    var notes: String = ""
+    var playTime: Int?
+    var status: String?
+    var notes: String?
     
-    init(title: String = "", platform: String = "", genre: String = "", rating: Int? = nil, releaseDate: Date? = nil, completionDate: Date? = nil, playTime: Int = 0, status: String = "", notes: String = "") {
+    init(title: String = "", platform: String? = nil, genre: String? = nil, rating: Int? = nil, releaseDate: Date? = nil,
+         completionDate: Date? = nil, playTime: Int? = nil, status: String? = nil, notes: String? = nil) {
         self.title = title
         self.platform = platform
         self.genre = genre

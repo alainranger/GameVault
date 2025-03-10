@@ -15,7 +15,7 @@ struct GameRow: View {
         VStack(alignment: .leading) {
             Text(game.title)
                 .font(.title)
-            Text(game.platform)
+            Text(game.platform ?? "")
                 .font(.subheadline)
             Text(game.releaseDate.map { "Release: \($0, style: .date)" } ?? "")
                 .font(.subheadline)
