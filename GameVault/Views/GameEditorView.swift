@@ -9,15 +9,15 @@ import SwiftUI
 import SwiftData
 
 private struct GameEditorViewModel {
-    var title = ""
-    var platform = ""
-    var releaseDate = Date()
-    var genre = ""
-    var rating = 0
-    var completionDate = Date()
-    var playTime = 0
-    var status = ""
-    var notes = ""
+    var title: String
+    var platform: String?
+    var releaseDate: Date?
+    var genre: String?
+    var rating: Int?
+    var completionDate: Date?
+    var playTime: Int?
+    var status: String?
+    var notes: String?
 }
 
 struct GameEditorView: View {
@@ -25,6 +25,12 @@ struct GameEditorView: View {
     let game: Game?
     
     @State private var viewModel = GameEditorViewModel(title: "", platform: "", releaseDate: Date(), genre: "", rating: 0, completionDate: Date(), playTime: 0, status: "", notes: "")
+    
+    let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            return formatter
+        }()
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -37,15 +43,97 @@ struct GameEditorView: View {
         NavigationStack {
             Form {
                 TextField("Title", text: $viewModel.title)
-                TextField("Platform", text: $viewModel.platform)
-                DatePicker("Release Date", selection: $viewModel.releaseDate, displayedComponents: .date)
-                TextField("Genre", text: $viewModel.genre)
-                Stepper("Rating: \(viewModel.rating)", value: $viewModel.rating, in: 0...5)
-                DatePicker("Completion Date", selection: $viewModel.completionDate, displayedComponents: .date)
-                Stepper("Play Time: \(viewModel.playTime)", value: $viewModel.playTime, in: 0...100)
-                TextField("Status", text: $viewModel.status)
+                TextField("Platform", text: Binding(
+                    get: { viewModel.platform ?? "" },
+                    set: { viewModel.platform = $0.isEmpty ? nil : $0 }
+                ))
+                
+                VStack {
+                    if let releaseDate = viewModel.releaseDate {
+                        Text("Selected Date: \(dateFormatter.string(from: releaseDate))")
+                    } else {
+                        Text("Release Date: Not Set")
+                    }
+
+                    DatePicker("Select Date", selection: Binding(
+                        get: { viewModel.releaseDate ?? Date() },
+                        set: { viewModel.releaseDate = $0 }
+                    ), displayedComponents: [.date])
+
+                    Button("Clear Date") {
+                        viewModel.releaseDate = nil
+                    }
+                }
+                .padding()
+                
+                //DatePicker("Release Date", selection: $viewModel.releaseDate, displayedComponents: .date)
+                TextField("Genre", text: Binding (
+                    get: { viewModel.genre ?? "" },
+                    set: { viewModel.genre = $0.isEmpty ? nil : $0 }
+                ))
+                
+                VStack {
+                    Text("Play Time: \(viewModel.rating.map { "\($0) hours" } ?? "Not set")")
+
+                    Stepper("Hours", value: Binding(
+                        get: { viewModel.rating ?? 0 }, // Si nil, retourne 0
+                        set: { viewModel.rating = $0 }  // Met à jour la valeur
+                    ), in: 0...100)
+
+                    Button("Clear Play Time") {
+                        viewModel.rating = nil // Réinitialise à nil
+                    }
+                }
+                .padding()
+                // Stepper("Rating: \(viewModel.rating)", value: $viewModel.rating, in: 0...5)
+                
+                
+                VStack {
+                    if let completionDate = viewModel.completionDate {
+                        Text("Selected Date: \(dateFormatter.string(from: completionDate))")
+                    } else {
+                        Text("Completion Date: Not Set")
+                    }
+
+                    DatePicker("Select Date", selection: Binding(
+                        get: { viewModel.completionDate ?? Date() },
+                        set: { viewModel.completionDate = $0 }
+                    ), displayedComponents: [.date])
+
+                    Button("Clear Date") {
+                        viewModel.completionDate = nil
+                    }
+                }
+                .padding()
+                
+                
+                // DatePicker("Completion Date", selection: $viewModel.completionDate, displayedComponents: .date)
+                
+                VStack {
+                    Text("Play Time: \(viewModel.playTime.map { "\($0) hours" } ?? "Not set")")
+
+                    Stepper("Hours", value: Binding(
+                        get: { viewModel.playTime ?? 0 }, // Si nil, retourne 0
+                        set: { viewModel.playTime = $0 }  // Met à jour la valeur
+                    ), in: 0...100)
+
+                    Button("Clear Play Time") {
+                        viewModel.playTime = nil // Réinitialise à nil
+                    }
+                }
+                .padding()
+                
+                //Stepper("Play Time: \(viewModel.playTime)", value: $viewModel.playTime, in: 0...100)
+                TextField("Status", text: Binding (
+                    get: { viewModel.status ?? "" },
+                    set: { viewModel.status = $0.isEmpty ? nil : $0 }
+                ))
+                
                 Label("Notes", systemImage: "pencil")   // TextEditor not available in preview
-                TextEditor(text: $viewModel.notes)
+                TextEditor(text: Binding (
+                    get: { viewModel.notes ?? "" },
+                    set: { viewModel.notes = $0.isEmpty ? nil : $0 }
+                ))
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {

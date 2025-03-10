@@ -83,7 +83,7 @@ private struct GameDetailContenView: View {
                 HStack {
                     Text("Platofrm")
                     Spacer()
-                    Text("\(game.platform)")
+                    Text("\(game.platform ?? "")")
                 }
                 HStack {
                     Text("Release date")
@@ -93,7 +93,7 @@ private struct GameDetailContenView: View {
                 HStack {
                     Text("Genre")
                     Spacer()
-                    Text("\(game.genre)")
+                    Text("\(game.genre ?? "")")
                 }
                 HStack {
                     Text("Rating")
@@ -108,17 +108,17 @@ private struct GameDetailContenView: View {
                 HStack {
                     Text("Play Time")
                     Spacer()
-                    Text("\(game.playTime)")
+                    Text(game.playTime.map { "\($0)" } ?? "")
                 }
                 HStack {
                     Text("Status")
                     Spacer()
-                    Text("\(game.status)")
+                    Text("\(game.status ?? "")")
                 }
                 HStack {
                     Text("Notes")
                     Spacer()
-                    Text("\(game.notes)")
+                    Text("\(game.notes ?? "")")
                 }
             }
         }
